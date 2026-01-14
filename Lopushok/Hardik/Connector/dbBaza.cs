@@ -20,7 +20,7 @@ public partial class dbBaza : DbContext
 
     public virtual DbSet<PRODUCT> PRODUCTs { get; set; }
 
-    public virtual DbSet<PRODUCTMATERIAL_B_IMPORT> PRODUCTMATERIAL_B_IMPORTs { get; set; }
+    public virtual DbSet<PRODUCTMATERIAL> PRODUCTMATERIALs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -30,39 +30,47 @@ public partial class dbBaza : DbContext
     {
         modelBuilder.Entity<MATERIALS_SHORT_B_IMPORT>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("MATERIALS_SHORT_B_IMPORT", "Demo");
+            entity.HasKey(e => e.Material_Name).HasName("materials_short_b_import_pk");
 
-            entity.Property(e => e._ЕДИНИЦА_ИЗМЕРЕНИЯ).HasMaxLength(50);
-            entity.Property(e => e._КОЛИЧЕСТВО_В_УПАКОВКЕ).HasMaxLength(50);
-            entity.Property(e => e._КОЛИЧЕСТВО_НА_СКЛАДЕ).HasMaxLength(50);
-            entity.Property(e => e._МИНИМАЛЬНЫЙ_ВОЗМОЖНЫЙ_ОСТАТОК).HasMaxLength(50);
-            entity.Property(e => e._СТОИМОСТЬ).HasMaxLength(50);
-            entity.Property(e => e._ТИП_МАТЕРИАЛА).HasMaxLength(50);
-            entity.Property(e => e.НАИМЕНОВАНИЕ_МАТЕРИАЛА).HasMaxLength(50);
+            entity.ToTable("MATERIALS_SHORT_B_IMPORT", "Demo");
+
+            entity.Property(e => e.Material_Name).HasMaxLength(50);
+            entity.Property(e => e.Cost).HasMaxLength(50);
+            entity.Property(e => e.Izmerenie).HasMaxLength(50);
+            entity.Property(e => e.Kolichestvo).HasMaxLength(50);
+            entity.Property(e => e.Kolikhestvo_sklad).HasMaxLength(50);
+            entity.Property(e => e.Min).HasMaxLength(50);
+            entity.Property(e => e.Type).HasMaxLength(50);
         });
 
         modelBuilder.Entity<PRODUCT>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("PRODUCTS", "Demo");
+            entity.HasKey(e => e.NAME_PRODUCT).HasName("products_pk");
 
-            entity.Property(e => e.IMAGE).HasMaxLength(50);
+            entity.ToTable("PRODUCTS", "Demo");
+
             entity.Property(e => e.NAME_PRODUCT).HasMaxLength(50);
+            entity.Property(e => e.IMAGE).HasMaxLength(50);
             entity.Property(e => e.NOMER_CEHA).HasMaxLength(50);
             entity.Property(e => e.TYPE).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<PRODUCTMATERIAL_B_IMPORT>(entity =>
+        modelBuilder.Entity<PRODUCTMATERIAL>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToTable("PRODUCTMATERIAL_B_IMPORT", "Demo");
+                .ToTable("PRODUCTMATERIAL", "Demo");
 
             entity.Property(e => e.MATIRIAL).HasMaxLength(50);
             entity.Property(e => e.NAME).HasMaxLength(50);
+
+            entity.HasOne(d => d.MATIRIALNavigation).WithMany()
+                .HasForeignKey(d => d.MATIRIAL)
+                .HasConstraintName("productmaterial_materials_short_b_import_fk");
+
+            entity.HasOne(d => d.NAMENavigation).WithMany()
+                .HasForeignKey(d => d.NAME)
+                .HasConstraintName("productmaterial_products_fk");
         });
 
         OnModelCreatingPartial(modelBuilder);

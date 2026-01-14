@@ -5,7 +5,7 @@ namespace Lopushok.Hardik.Dao;
 
 public partial class PRODUCT
 {
-    public string? NAME_PRODUCT { get; set; }
+    public string NAME_PRODUCT { get; set; } = null!;
 
     public int? ARTIKUL { get; set; }
 
